@@ -1,0 +1,366 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package exp3_s8_javier_nunez;
+
+/**
+ *
+ * @author javier
+ */
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.UUID;
+
+public class Exp3_S8_Javier_Nunez {
+
+    /**
+     * @param args the command line arguments
+     */
+   
+    // Variables estáticas y globales
+    static int precioVIP = 30000;
+    static int precioPalco = 25000;
+    static int precioPlatea = 20000;
+    static int precioGaleria = 15000;
+    static int descuentoEstudiante = 10;
+    static int descuentoTerceraEdad = 15;
+    static String idventa;
+
+    // Estructuras de datos para almacenar información de ventas, asientos, clientes y precios finales
+    static ArrayList<String> ventas = new ArrayList<>();
+    static ArrayList<String> asientosDisponibles = new ArrayList<>();
+    static ArrayList<String> clientes = new ArrayList<>();
+    static ArrayList<Integer> preciosFinales = new ArrayList<>();
+    static ArrayList<String> idsVentas = new ArrayList<>();
+    
+    // Variables para almacenar el número de asientos disponibles por categoría
+    static int asientosDisponiblesVIP = 30;
+    static int asientosDisponiblesPalco = 100;
+    static int asientosDisponiblesPlatea = 200;
+    static int asientosDisponiblesGaleria = 500;
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("Bienvenido al Teatro Moro");
+        
+        // Inicializar la lista de asientos disponibles
+        asientosDisponibles.add("VIP");
+        asientosDisponibles.add("PALCO");
+        asientosDisponibles.add("PLATEA");
+        asientosDisponibles.add("GALERIA");
+
+        boolean continuar = true;
+        while (continuar) {
+            System.out.println("\n----- Menú Principal -----");
+            System.out.println("1. Comprar entrada");
+            System.out.println("2. Ver resumen de ventas");
+            System.out.println("3. Editar entradas");
+            System.out.println("4. Salir");
+            System.out.print("Seleccione una opción: ");
+            
+            int opcion = scan.nextInt();
+
+            switch (opcion) {
+                case 1:
+                    comprarEntrada(scan);
+                    break;
+                case 2:
+                    verResumenVentas();
+                    break;
+                case 3:
+                    modificarEntrada(scan);
+                    break;
+                case 4:
+                    continuar = false;
+                    System.out.println("¡Gracias por visitar el Teatro Moro!");
+                    break;
+                default:
+                    System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
+            }
+        }
+    }
+
+    public static void comprarEntrada(Scanner scan) {
+        // Mostrar el número de asientos disponibles por categoría
+        System.out.println("\nAsientos disponibles:");
+        System.out.println("VIP: " + asientosDisponiblesVIP);
+        System.out.println("Palco: " + asientosDisponiblesPalco);
+        System.out.println("Platea: " + asientosDisponiblesPlatea);
+        System.out.println("Galería: " + asientosDisponiblesGaleria);
+        System.out.println("--------------------------------------");
+        System.out.println("\nIndique la entrada que desea comprar:");
+        System.out.println("--------------------------------------");
+        System.out.println("VIP:      $30000 ");
+        System.out.println("PALCO:    $25000 ");
+        System.out.println("PLATEA:   $20000 ");
+        System.out.println("GALERIA:  $15000 ");
+        String tipoDeEntrada = scan.next().toLowerCase();
+        
+        // Restar la cantidad de asientos disponibles en la categoría seleccionada
+        switch (tipoDeEntrada) {
+            case "vip":
+                if (asientosDisponiblesVIP > 0) {
+                    asientosDisponiblesVIP--;
+                } else {
+                    System.out.println("No hay asientos disponibles en la categoría VIP.");
+                    return;
+                }
+                break;
+            case "palco":
+                if (asientosDisponiblesPalco > 0) {
+                    asientosDisponiblesPalco--;
+                } else {
+                    System.out.println("No hay asientos disponibles en la categoría Palco.");
+                    return;
+                }
+                break;
+            case "platea":
+                if (asientosDisponiblesPlatea > 0) {
+                    asientosDisponiblesPlatea--;
+                } else {
+                    System.out.println("No hay asientos disponibles en la categoría Platea.");
+                    return;
+                }
+                break;
+            case "galeria":
+                if (asientosDisponiblesGaleria > 0) {
+                    asientosDisponiblesGaleria--;
+                } else {
+                    System.out.println("No hay asientos disponibles en la categoría Galería.");
+                    return;
+                }
+                break;
+            default:
+                System.out.println("Tipo de entrada no válida.");
+                return;
+        }
+
+
+        int precioBase = 0;
+        switch (tipoDeEntrada) {
+            case "vip":
+                precioBase = precioVIP;
+                break;
+            case "palco":
+                precioBase = precioPalco;
+                break;
+            case "platea":
+                precioBase = precioPlatea;
+                break;
+            case "galeria":
+                precioBase = precioGaleria;
+                break;
+            default:
+                System.out.println("Tipo de entrada no válida.");
+                return;
+        }
+
+        System.out.println("Por favor ingrese su edad:");
+        int edad = scan.nextInt();
+        int descuento = 0;
+        if (edad <= 18) {
+            descuento = descuentoEstudiante;
+        } else if (edad >= 65) {
+            descuento = descuentoTerceraEdad;
+        }
+
+        double precioFinal = precioBase * (1 - (double) descuento / 100);
+        
+        // Generar un ID de venta único
+        String idVenta = UUID.randomUUID().toString();
+        
+
+        // Agregar la venta a la lista de ventas
+        ventas.add("ID de venta: " + idVenta + ", Ubicación: " + tipoDeEntrada.toUpperCase() + ", Total a pagar por la entrada: $" + (int) precioFinal + ", Descuento aplicado: " + descuento + "%");
+
+        // Actualizar la lista de asientos disponibles
+        asientosDisponibles.remove(tipoDeEntrada);
+
+        // Registrar al cliente
+        clientes.add("Edad: " + edad);
+        
+        // Imprimir boleta
+            System.out.println("------------------------------------");
+            System.out.println("             Teatro Moro            ");
+            System.out.println("------------------------------------");
+            System.out.println("ID de venta: " + idVenta);
+            System.out.println("Ubicación: " + tipoDeEntrada.toUpperCase());
+            System.out.println("Costo base: $" + precioBase);
+            System.out.println("Descuento aplicado: " + descuento + "%");
+            System.out.println("Costo final: $" + (int) precioFinal);
+            System.out.println("------------------------------------");
+            System.out.println("Gracias por su visita al Teatro Moro");
+            System.out.println("------------------------------------");
+
+            // Calcular la suma total de los precios finales
+            int total = 0;            
+            for (int precio : preciosFinales) {
+                total += precio;
+            }
+        }
+
+    public static void verResumenVentas() {
+        if (ventas.isEmpty()) {
+            System.out.println("No se han realizado ventas aún.");
+            return;
+        }
+
+        System.out.println("\n----- Resumen de Ventas -----");
+        for (String venta : ventas) {
+            System.out.println(venta);
+        }
+    }
+
+    public static void modificarEntrada(Scanner scan) {
+    System.out.println("\nIngrese el ID de venta que desea modificar:");
+    String idVentaModificar = scan.next();
+
+    boolean encontrado = false;
+    for (int i = 0; i < ventas.size(); i++) {
+        String venta = ventas.get(i);
+        if (venta.contains("ID de venta: " + idVentaModificar)) {
+            encontrado = true;
+            String[] detalles = venta.split(", ");
+            String ubicacion = detalles[0].substring(detalles[0].indexOf(": ") + 2).toLowerCase();
+            int precioBase = 0;
+            switch (ubicacion) {
+                case "vip":
+                    precioBase = precioVIP;
+                    break;
+                case "palco":
+                    precioBase = precioPalco;
+                    break;
+                case "platea":
+                    precioBase = precioPlatea;
+                    break;
+                case "galeria":
+                    precioBase = precioGaleria;
+                    break;
+            }
+
+            System.out.println("\nIndique la nueva entrada que desea comprar:");
+            System.out.println("VIP:      $30000 ");
+            System.out.println("PALCO:    $25000 ");
+            System.out.println("PLATEA:   $20000 ");
+            System.out.println("GALERIA:  $15000 ");
+            String nuevaEntrada = scan.next().toLowerCase();
+
+            int nuevoPrecioBase = 0;
+            switch (nuevaEntrada) {
+                case "vip":
+                    nuevoPrecioBase = precioVIP;
+                    break;
+                case "palco":
+                    nuevoPrecioBase = precioPalco;
+                    break;
+                case "platea":
+                    nuevoPrecioBase = precioPlatea;
+                    break;
+                case "galeria":
+                    nuevoPrecioBase = precioGaleria;
+                    break;
+                default:
+                    System.out.println("Tipo de entrada no válida.");
+                    return;
+            }
+            
+            // Restar la cantidad de asientos disponibles en la ubicación original
+            switch (ubicacion) {
+                case "vip":
+                    asientosDisponiblesVIP++;
+                    break;
+                case "palco":
+                    asientosDisponiblesPalco++;
+                    break;
+                case "platea":
+                    asientosDisponiblesPlatea++;
+                    break;
+                case "galeria":
+                    asientosDisponiblesGaleria++;
+                    break;
+            }
+
+            // Aumentar la cantidad de asientos disponibles en la nueva ubicación
+            switch (nuevaEntrada) {
+                case "vip":
+                    if (asientosDisponiblesVIP > 0) {
+                        asientosDisponiblesVIP--;
+                    } else {
+                        System.out.println("No hay asientos disponibles en la categoría VIP.");
+                        return;
+                    }
+                    break;
+                case "palco":
+                    if (asientosDisponiblesPalco > 0) {
+                        asientosDisponiblesPalco--;
+                    } else {
+                        System.out.println("No hay asientos disponibles en la categoría Palco.");
+                        return;
+                    }
+                    break;
+                case "platea":
+                    if (asientosDisponiblesPlatea > 0) {
+                        asientosDisponiblesPlatea--;
+                    } else {
+                        System.out.println("No hay asientos disponibles en la categoría Platea.");
+                        return;
+                    }
+                    break;
+                case "galeria":
+                    if (asientosDisponiblesGaleria > 0) {
+                        asientosDisponiblesGaleria--;
+                    } else {
+                        System.out.println("No hay asientos disponibles en la categoría Galería.");
+                        return;
+                    }
+                    break;
+                default:
+                    System.out.println("Tipo de entrada no válida.");
+                    return;
+            }
+
+            System.out.println("Por favor ingrese su edad:");
+            int edad = scan.nextInt();
+            int descuento = 0;
+            if (edad <= 18) {
+                descuento = descuentoEstudiante;
+            } else if (edad >= 65) {
+                descuento = descuentoTerceraEdad;
+            }
+
+            double precioFinal = nuevoPrecioBase * (1 - (double) descuento / 100);
+
+            // Actualizar la lista de ventas con la nueva entrada
+            ventas.set(i, "ID de venta: " + idVentaModificar + ", Ubicación: " + nuevaEntrada.toUpperCase() + ", Total a pagar por la entrada: $" + (int) precioFinal + ", Descuento aplicado: " + descuento + "%");
+
+            // Actualizar la lista de asientos disponibles
+            asientosDisponibles.add(ubicacion);
+            asientosDisponibles.remove(nuevaEntrada);            
+
+            // Registrar al cliente
+            clientes.set(i, "Edad: " + edad);
+
+            // Imprimir boleta modificada
+            System.out.println("------------------------------------");
+            System.out.println("          Boleta Modificada         ");
+            System.out.println("------------------------------------");
+            System.out.println("ID de venta: " + idVentaModificar);
+            System.out.println("Nueva Ubicación: " + nuevaEntrada.toUpperCase());
+            System.out.println("Costo base: $" + nuevoPrecioBase);
+            System.out.println("Descuento aplicado: " + descuento + "%");
+            System.out.println("Nuevo Costo final: $" + (int) precioFinal);
+            System.out.println("------------------------------------");
+            System.out.println("Gracias por su visita al Teatro Moro");
+            System.out.println("------------------------------------");
+
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        System.out.println("No se encontró ninguna venta con el ID proporcionado.");
+    }
+}
+}
